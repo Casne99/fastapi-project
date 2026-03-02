@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Alembic
+backend/alembic/__pycache__/
+backend/alembic/versions/__pycache__/
+
+# IDE
+.idea/
+*.iml
+
+# Docker
+postgres_data/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Log e temp
+*.log
+*.tmp
+
+# Escludi file di ambiente
+.env
+
