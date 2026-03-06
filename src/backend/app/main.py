@@ -1,23 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException, status
-from .database import SessionLocal
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 from . import config
 from fastapi.security import OAuth2PasswordRequestForm
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 app = FastAPI()
-
-@app.get("/")
-def root():
-    return {"status": "ok"}
 
 @app.post("/token")
 def get_token(form_data: OAuth2PasswordRequestForm = Depends()):
