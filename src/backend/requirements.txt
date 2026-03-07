@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+alembic
+python-jose[cryptography]
+python-multipart
+bcrypt
+pytest
+httpx
+testcontainers[postgresql]
