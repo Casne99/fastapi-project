@@ -44,4 +44,4 @@ jobs:
       - name: Run tests
         run: |
           cd src/backend
-          pytest app/tests
+          pytest tests
