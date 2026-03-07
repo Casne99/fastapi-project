@@ -5,3 +5,5 @@ psycopg2-binary
 alembic
 python-jose[cryptography]
 python-multipart
+bcrypt
+pytest

@@ -6,4 +6,4 @@ Base = declarative_base()
 class Credentials(Base):
     __tablename__ = "credentials"
     user = Column(String(255), nullable=False, primary_key=True)
-    password = Column(String(255), nullable=False)  # hash bcrypt
+    password = Column(String(60), nullable=False)

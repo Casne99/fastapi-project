@@ -3,12 +3,24 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from . import config
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from .database import SessionLocal
+from .models import Credentials
+import bcrypt
 
 app = FastAPI()
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @app.post("/token")
-def get_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    if form_data.username != "admin" or form_data.password != "password":
+def get_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(Credentials).filter(Credentials.user == form_data.username).first()
+    if not user or not bcrypt.checkpw(form_data.password.encode(), user.password.encode()):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenziali non valide",
