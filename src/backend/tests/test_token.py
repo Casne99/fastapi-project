@@ -23,9 +23,10 @@ def test_get_token_success():
     response = client.post("/api/token", data={"username": "admin", "password": "password"})
     assert response.status_code == 200
     data = response.json()
-    assert "token" in data
-    token = data["token"]
-    payload = jwt.decode(token, config.SECRET_KEY, algorithms=[config.ALGORITHM])
+    assert data["message"] == "Login effettuato con successo"
+    cookie = response.cookies.get("access_token")
+    assert cookie is not None
+    payload = jwt.decode(cookie, config.SECRET_KEY, algorithms=[config.ALGORITHM])
     assert payload["sub"] == "admin"
     assert "exp" in payload
 
