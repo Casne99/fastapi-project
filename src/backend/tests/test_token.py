@@ -1,41 +1,12 @@
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from testcontainers.postgres import PostgresContainer
-from app.main import app, get_db
-from app import config
-from app.models import Credentials, Base
-from jose import jwt
 import bcrypt
 import pytest
+from app import config
+from app.main import app
+from app.models import Credentials
+from fastapi.testclient import TestClient
+from jose import jwt
 
-postgres = PostgresContainer("postgres:15-alpine")
-
-
-@pytest.fixture(scope="session", autouse=True)
-def start_container():
-    postgres.start()
-    yield
-    postgres.stop()
-
-
-@pytest.fixture(scope="session")
-def test_engine(start_container):
-    url = postgres.get_connection_url().replace("postgresql://", "postgresql+psycopg2://")
-    engine = create_engine(url)
-    Base.metadata.create_all(bind=engine)
-    return engine
-
-
-@pytest.fixture()
-def db_session(test_engine):
-    TestSession = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
-    db = TestSession()
-    try:
-        yield db
-    finally:
-        db.rollback()
-        db.close()
+client = TestClient(app)
 
 
 @pytest.fixture(autouse=True)
@@ -46,25 +17,6 @@ def setup_db(db_session):
     user = Credentials(user="admin", password=password_hash)
     db_session.add(user)
     db_session.commit()
-
-
-@pytest.fixture(autouse=True)
-def override_db(test_engine):
-    TestSession = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
-
-    def _get_test_db():
-        db = TestSession()
-        try:
-            yield db
-        finally:
-            db.close()
-
-    app.dependency_overrides[get_db] = _get_test_db
-    yield
-    app.dependency_overrides.clear()
-
-
-client = TestClient(app)
 
 
 def test_get_token_success():
