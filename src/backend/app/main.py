@@ -17,7 +17,7 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/token")
+@app.post("/api/token")
 def get_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(Credentials).filter(Credentials.user == form_data.username).first()
     if not user or not bcrypt.checkpw(form_data.password.encode(), user.password.encode()):
