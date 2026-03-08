@@ -59,6 +59,20 @@ services:
     networks:
       - app-network
 
+  frontend-tests:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile.playwright
+    environment:
+      - PLAYWRIGHT_BASE_URL=http://nginx
+    depends_on:
+      - gui
+      - backend
+      - nginx
+    networks:
+      - app-network
+    command: ["npx", "playwright", "test"]
+
 networks:
   app-network:
     driver: bridge
