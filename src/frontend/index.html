@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Frontend GUI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #login-form {
+            max-width: 320px;
+            margin: 40px auto;
+            padding: 24px 20px 20px 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        #login-form label {
+            display: inline-block;
+            width: 90px;
+            margin-bottom: 8px;
+            text-align: right;
+        }
+        #login-form input {
+            width: 180px;
+            padding: 5px;
+            margin-bottom: 12px;
+            margin-left: 8px;
+            box-sizing: border-box;
+        }
+        #login-form button {
+            margin-left: 98px;
+            padding: 6px 18px;
+        }
+        #message {
+            margin-top: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Benvenuto nella GUI!</h1>
+    <form id="login-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Login</button>
+    </form>
+    <div id="message"></div>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = '';
+            try {
+                const response = await fetch('/api/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Login effettuato!';
+                    document.getElementById('login-form').remove();
+                } else {
+                    const contentType = response.headers.get('content-type');
+                    let errorMessage = 'Errore di login';
+                    if (contentType && contentType.includes('application/json')) {
+                        const data = await response.json();
+                        errorMessage = data.detail || errorMessage;
+                    } else {
+                        errorMessage = await response.text();
+                    }
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = errorMessage;
+                }
+            } catch (error) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Errore di rete';
+                console.error('Dettagli errore:', error);
+            }
+        });
+    </script>
+</body>
+</html>
