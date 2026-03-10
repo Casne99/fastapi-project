@@ -61,8 +61,8 @@ services:
 
   frontend-tests:
     build:
-      context: ./src/frontend
-      dockerfile: Dockerfile.playwright
+      context: .
+      dockerfile: src/frontend/Dockerfile.playwright
     environment:
       - PLAYWRIGHT_BASE_URL=http://nginx
     depends_on:

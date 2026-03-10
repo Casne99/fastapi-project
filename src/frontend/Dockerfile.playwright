@@ -3,10 +3,19 @@ FROM mcr.microsoft.com/playwright:v1.58.2-jammy
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# Copia package.json dal contesto (root del progetto -> src/frontend)
+COPY src/frontend/package.json src/frontend/package-lock.json ./
 RUN npm install
 
-COPY . .
+# Copia la configurazione di Playwright e i test
+COPY src/frontend/playwright.config.ts ./
+COPY src/frontend/tests ./tests
+
+# Installa Python e pip
+RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
+
+# Installa le dipendenze Python necessarie per lo script di setup
+RUN pip3 install sqlalchemy psycopg2-binary bcrypt
 
 # Esegui i test Playwright
 CMD ["npx", "playwright", "test"]

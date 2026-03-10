@@ -26,3 +26,9 @@ Thumbs.db
 # Escludi file di ambiente
 .env
 
+# Node.js
+node_modules/
+package-lock.json
+yarn.lock
+dist/
+build/
