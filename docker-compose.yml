@@ -3,7 +3,7 @@ version: "3.9"
 services:
 
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: postgres_db
     restart: always
     environment:
@@ -14,6 +14,13 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    networks:
+      - app-network
 
   backend:
     build: ./src/backend
@@ -22,9 +29,53 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - ./src/backend:/app
+    networks:
+      - app-network
+
+  gui:
+    build: ./src/frontend
+    container_name: gui_frontend
+    restart: always
+    expose:
+      - "80"
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - gui
+    networks:
+      - app-network
+
+  frontend-tests:
+    build:
+      context: .
+      dockerfile: src/frontend/Dockerfile.playwright
+    environment:
+      - PLAYWRIGHT_BASE_URL=http://nginx
+    depends_on:
+      - gui
+      - backend
+      - nginx
+    networks:
+      - app-network
+    command: ["npx", "playwright", "test"]
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   postgres_data:

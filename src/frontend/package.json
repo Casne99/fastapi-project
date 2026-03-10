@@ -1,0 +1,13 @@
+{
+  "name": "frontend-tests",
+  "version": "1.0.0",
+  "description": "Test Playwright per la frontend",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.43.1"
+  }
+}
+
