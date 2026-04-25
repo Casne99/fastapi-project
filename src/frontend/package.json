@@ -4,10 +4,10 @@
   "description": "Test Playwright per la frontend",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:docker": "xvfb-run -a --server-args=\"-screen 0 1920x1080x24\" playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.43.1"
+    "@playwright/test": "^1.58.2"
   }
 }
-

@@ -19,7 +19,7 @@ def start_container():
 
 @pytest.fixture(scope="session")
 def test_engine(start_container):
-    url = postgres.get_connection_url().replace("postgresql://", "postgresql+psycopg2://")
+    url = postgres.get_connection_url(driver="psycopg2")
     engine = create_engine(url)
 
     alembic_cfg = Config(os.path.join(os.path.dirname(__file__), "..", "alembic.ini"))
