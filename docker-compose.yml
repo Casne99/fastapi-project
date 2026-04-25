@@ -37,7 +37,7 @@ services:
       - app-network
 
   gui:
-    build: ./src/frontend
+    build: ./src/frontend/gui
     container_name: gui_frontend
     restart: always
     expose:
