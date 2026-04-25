@@ -69,9 +69,14 @@ services:
       - gui
       - backend
       - nginx
+    shm_size: "1gb"
+    ipc: host
+    volumes:
+      - ./src/frontend/test-results:/app/test-results
+      - ./src/frontend/playwright-report:/app/playwright-report
     networks:
       - app-network
-    command: ["npx", "playwright", "test"]
+    command: ["npm", "run", "test:docker"]
 
 networks:
   app-network:
